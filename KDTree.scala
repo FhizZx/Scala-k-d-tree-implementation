@@ -1,6 +1,6 @@
 import scala.collection.mutable.{ArrayBuffer, HashMap}
 
-/** Space partitioning data structure designed for efficient nearest neighbour searches in a space of arbitrary dimensions*/
+/** Space partitioning data structure designed for efficient nearest neighbour searches in a space of arbitrary dimension*/
 class KDTree private(val dimension: Int) {
   private var root: KDTree.Tree = null
 
@@ -83,11 +83,14 @@ object KDTree {
   private def buildTree(elements: Array[Point], axis: Int, dimension: Int): Tree = {
     if (elements.size == 0)
       return null
+    
     val sorted = elements.sortBy(a => a(axis))
-    println()
-    val m = sorted.size / 2
-    return new Tree(sorted(m), (1 + axis) % dimension,
-    buildTree(sorted.take(m),(1 + axis) % dimension, dimension),
-    buildTree(sorted.drop(m + 1),  (1 + axis) % dimension, dimension))
+    val m = sorted(sorted.size / 2) //median of points according to the current axis
+                                 
+    return new Tree(m, //point at root
+                    (1 + axis) % dimension, //axis of splitting
+                    buildTree(sorted.take(m),      (1 + axis) % dimension, dimension), //left branch
+                    buildTree(sorted.drop(m + 1),  (1 + axis) % dimension, dimension) //right branch
+                   )
   }
 }
